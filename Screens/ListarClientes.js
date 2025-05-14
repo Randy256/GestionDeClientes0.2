@@ -23,9 +23,18 @@ export default function ListarClientes({ route, navigation, guardarNuevo }) {
         {
           text: 'cancelar',
           style: 'cancel'
-        }
-      ]
-    )
+        },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => {
+            const nuevaLista = [...clientes];
+            setClientes(nuevaLista);
+          }
+        },
+      ],
+      { cancelable: true }
+    );
   }
 
   return (
