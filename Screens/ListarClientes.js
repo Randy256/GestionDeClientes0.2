@@ -2,22 +2,19 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpaci
 import React, { useState } from 'react'
 import GuardarClientes from './GuardarClientes';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
-export default function ListarClientes({ route, navigation, guardarNuevo }) {
+export default function ListarClientes({ navigation }) {
 
-  const { guardarNuevo } = route.params;
-
-  const [clientes, setClientes] = useState([
-
-  ]);
+  const [clientes, setClientes] = useState([]);
 
   const guardarNuevo = (nuevo) => {
     setClientes([nuevo, ...clientes])
   };
 
-  const eliminar = (index) => {
+  const eliminar = (cedula) => {
     Alert.alert(
-      'Confimar eliminacion',
+      'Confirmar eliminacion',
       '¿Estas seguro de que deseas eliminar este cliente?',
       [
         {
@@ -28,8 +25,8 @@ export default function ListarClientes({ route, navigation, guardarNuevo }) {
           text: 'Eliminar',
           style: 'destructive',
           onPress: () => {
-            const nuevaLista = [...clientes];
-            setClientes(nuevaLista);
+            setClientes(clientes.filter(cliente => cliente.cedula !== cedula));
+            Alert.alert('Cliente eliminado');
           }
         },
       ],
@@ -42,9 +39,9 @@ export default function ListarClientes({ route, navigation, guardarNuevo }) {
     <View style={styles.container}>
       <TouchableOpacity 
         style={styles.boton} 
-        onPress={() => navigation.navigate('GuadarClientes', { guardarNuevo })}
+        onPress={() => navigation.navigate('GuardarClientes', { guardarNuevo })}
       >
-        <AntDesign name="adduser" size={24} color="black" />
+        <AntDesign name="adduser" size={24} color="green" />
       </TouchableOpacity>
 
       <Text style={styles.titulo}>ListarClientes</Text>
@@ -54,10 +51,12 @@ export default function ListarClientes({ route, navigation, guardarNuevo }) {
         <ScrollView style={styles.lista}>
           {clientes.map((i, index) => (
             <View key={index} style={styles.card}>
+              <MaterialCommunityIcons name="delete-forever" size={24} color="green" 
+              onPress={() => eliminar(i.cedula)}   />
               <Text style={styles.label}>Cedula: <Text style={styles.valor}>{i.cedula}</Text> </Text>
               <Text style={styles.label}>Nombres: <Text style={styles.valor}>{i.nombres}</Text> </Text>
               <Text style={styles.label}>Apellidos: <Text style={styles.valor}>{i.apellidos}</Text> </Text>
-              <Text style={styles.label}>Fecha de Nacimiento: <Text style={styles.valor}>{i.fechaNac}</Text> </Text>
+              <Text style={styles.label}>Fecha de Nacimiento: <Text style={styles.valor}>{i.fechanac}</Text> </Text>
               <Text style={styles.label}>Sexo: <Text style={styles.valor}>{i.sexo}</Text> </Text>
             </View>
           ))}

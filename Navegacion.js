@@ -11,9 +11,10 @@ export default function Navegacion() {
     const Stack = createNativeStackNavigator();
     function StackMenu() {
         return (
-            <Stack.Navigator initialRouteName="GuardarClientes">
+            <Stack.Navigator initialRouteName="ListarClientes">
+                 <Stack.Screen name="ListarClientes" component={ListarClientes} />
                 <Stack.Screen name="GuardarClientes" component={GuardarClientes} />
-                <Stack.Screen name="ListarClientes" component={ListarClientes} />
+               
             </Stack.Navigator>
         );
     }

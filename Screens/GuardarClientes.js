@@ -4,44 +4,25 @@ import { Picker } from '@react-native-picker/picker';
 
 export default function GuardarClientes({ route, navigation }) {
 
-  const {guardarNuevo} = route.params;
+  const { guardarNuevo } = route.params;
 
   const [cedula, setCedula] = useState('');
   const [Nombres, setNombres] = useState('');
   const [Apellidos, setApellidos] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [sexo, setSexo] = useState('');
-  
-  const [clientes, setClientes] = useState([]);
-  
-
-  const nuevoCliente = {
-    cedula: cedula,
-    Nombres: Nombres,
-    Apellidos: Apellidos,
-    fechaNacimiento: fechaNacimiento,
-    sexo: sexo,
-  }
-
-  guardarNuevo(nuevoCliente)
-  Alert.alert('Dato almacenado correctamente');
-  setCedula('');
-  setNombres('');
-  setApellidos('');
-  setFechaNacimiento('');
-  setSexo('');
 
   const guardar = () => {
     if (!cedula || !Nombres) return null;
     const nuevoCliente = {
-      nuevacedula: cedula,
-      nuevosnombres: Nombres,
-      nuevosapellidos: Apellidos,
-      nuevafechanac: fechaNacimiento,
-      nuevosexo: sexo,
+      cedula: cedula,
+      nombres: Nombres,
+      apellidos: Apellidos,
+      fechanac: fechaNacimiento,
+      sexo: sexo,
     }
-  
-    setClientes([nuevoCliente, ...clientes])
+    guardarNuevo(nuevoCliente);
+
     Alert.alert('Datos Almacenados', `
         Cedula: ${cedula}
         Nombres: ${Nombres}
@@ -58,48 +39,46 @@ export default function GuardarClientes({ route, navigation }) {
     navigation.goBack();
   };
 
-  const eliminar = guardar.filter((clientes) => clientes!== nuevoCliente);
-  console.log(eliminar)
-    
+
 
   return (
 
     <View style={styles.contenedor}>
-    
+
       <Text style={styles.label}>Registos De Datos Del Cliente</Text>
-    
+
       <Text style={styles.label}>Cedula:</Text>
-      <TextInput 
+      <TextInput
         style={styles.input}
         value={cedula}
         onChangeText={setCedula}
         placeholder="Ej: 365-130995-0002H"
       />
-    
+
       <Text style={styles.label}>Nombres:</Text>
-      <TextInput 
+      <TextInput
         style={styles.input}
         value={Nombres}
-         onChangeText={setNombres}
+        onChangeText={setNombres}
         placeholder="Ej: Juan Carlos"
       />
-          
+
       <Text style={styles.label}>Apellidos:</Text>
       <TextInput
         style={styles.input}
         value={Apellidos}
         onChangeText={setApellidos}
-        placeholder="Ej: Perez Lopez" 
+        placeholder="Ej: Perez Lopez"
       />
-    
+
       <Text style={styles.label}>Fecha de Nacimiento:</Text>
-      <TextInput 
+      <TextInput
         style={styles.input}
         value={fechaNacimiento}
         onChangeText={setFechaNacimiento}
         placeholder="YYYY-MM-DD"
       />
-    
+
       <Text style={styles.label}>Sexo:</Text>
       <View style={styles.Picker}>
         <Picker
@@ -108,12 +87,12 @@ export default function GuardarClientes({ route, navigation }) {
         >
           <Picker.Item label="Seleccione... " value="" />
           <Picker.Item label="Masculino" value="Masculino" />
-            <Picker.Item label="Femenino" value="Femenino" />
-          </Picker>
-        </View>
-          
-        <Button title="Guardar" onPress={guardar} />
-    
+          <Picker.Item label="Femenino" value="Femenino" />
+        </Picker>
+      </View>
+
+      <Button title="Guardar" onPress={guardar} />
+
     </View>
   );
 }
