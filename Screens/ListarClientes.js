@@ -1,16 +1,36 @@
 import { Alert, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import GuardarClientes from './GuardarClientes';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
+import { collection, getFirestore, query, doc, setDoc, getDocs, deleteDoc } from 'firebase/firestore';
+import appFirebase from '../BasedeDatos/Firebase';
+
+const db=getFirestore(appFirebase);
 
 export default function ListarClientes({ navigation }) {
 
   const [clientes, setClientes] = useState([]);
 
-  const guardarNuevo = (nuevo) => {
-    setClientes([nuevo, ...clientes])
+  const guardarNuevo = async(nuevo) => {
+    await setDoc(doc(db, "clientes", nuevo.cedula), nuevo);
   };
+
+  useEffect(() =>{
+    LeerDatos();
+  }), [clientes];
+
+  const LeerDatos = async() => {
+    const q = query(collection(db, "clientes"));
+    const queryShapshot = await getDocs(q);
+    const d = [];
+    queryShapshot.forEach((doc) => {
+      const datosBD = doc.data();
+      d.push(datosBD);
+    });
+    setClientes(d);
+  }
 
   const eliminar = (cedula) => {
     Alert.alert(
@@ -24,8 +44,8 @@ export default function ListarClientes({ navigation }) {
         {
           text: 'Eliminar',
           style: 'destructive',
-          onPress: () => {
-            setClientes(clientes.filter(cliente => cliente.cedula !== cedula));
+          onPress: async () => {
+            await deleteDoc(doc(db, "clientes", cedula));
             Alert.alert('Cliente eliminado');
           }
         },
@@ -44,7 +64,7 @@ export default function ListarClientes({ navigation }) {
         <AntDesign name="adduser" size={24} color="green" />
       </TouchableOpacity>
 
-      <Text style={styles.titulo}>ListarClientes</Text>
+      <Text style={styles.titulo}>Lista de Clientes</Text>
       {clientes.length === 0 ? (
         <Text style={styles.mensaje}>No hay clientes registrados.</Text>
       ) : (
