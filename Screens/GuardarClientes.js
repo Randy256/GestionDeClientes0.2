@@ -1,40 +1,57 @@
 import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 
 export default function GuardarClientes({ route, navigation }) {
 
-  const { guardarNuevo } = route.params;
+  const { guardarNuevo, cliente, esEdicion } = route.params || {};
 
-  const [cedula, setCedula] = useState('');
-  const [Nombres, setNombres] = useState('');
-  const [Apellidos, setApellidos] = useState('');
-  const [fechaNacimiento, setFechaNacimiento] = useState('');
-  const [sexo, setSexo] = useState('');
+  const [cedula, setCedula] = useState(cliente ? cliente.cedula : '');
+  const [Nombres, setNombres] = useState(cliente ? cliente.nombres : '');
+  const [Apellidos, setApellidos] = useState(cliente ? cliente.apellidos: '');
+  const [fechaNacimiento, setFechaNacimiento] = useState(cliente ? cliente.fechanac : '');
+  const [sexo, setSexo] = useState(cliente ? cliente.sexo : '');
+
+  useEffect(() => {
+    if (cliente) {
+      setCedula(cliente.cedula);
+      setNombres(cliente.nombres);
+      setApellidos(cliente.apellidos);
+      setFechaNacimiento(cliente.fechanac);
+      setSexo(cliente.sexo);
+    }
+  }, [cliente]);
 
   const guardar = () => {
     if (!cedula || !Nombres) return null;
     const nuevoCliente = {
-      cedula: cedula,
+      cedula: esEdicion && cliente ? cliente.cedula : cedula,
       nombres: Nombres,
       apellidos: Apellidos,
       fechanac: fechaNacimiento,
       sexo: sexo,
-    }
+    };
     guardarNuevo(nuevoCliente);
 
-    Alert.alert('Datos Almacenados', `
-        Cedula: ${cedula}
+    Alert.alert(
+      esEdicion ? 'Datos Actualizados' : 'Datos Almacenados', 
+      `
+        Cedula: ${esEdicion && cliente ? cliente.cedula : cedula}
         Nombres: ${Nombres}
         Apellidos: ${Apellidos}
         Fecha Nacimiento: ${fechaNacimiento}
         sexo: ${sexo}
-      `);
-    setCedula('');
-    setNombres('');
-    setApellidos('');
-    setFechaNacimiento('');
-    setSexo('');
+      `
+    );
+
+
+    if (!esEdicion) {
+      setCedula('');
+      setNombres('');
+      setApellidos('');
+      setFechaNacimiento('');
+      setSexo('');
+    }
 
     navigation.goBack();
   };
@@ -45,7 +62,9 @@ export default function GuardarClientes({ route, navigation }) {
 
     <View style={styles.contenedor}>
 
-      <Text style={styles.label}>Registos De Datos Del Cliente</Text>
+      <Text style={styles.label}>
+        {esEdicion ? 'Editar Datos del Cliente' : 'Registros De Datos Del Cliente'}
+      </Text>
 
       <Text style={styles.label}>Cedula:</Text>
       <TextInput
@@ -53,6 +72,7 @@ export default function GuardarClientes({ route, navigation }) {
         value={cedula}
         onChangeText={setCedula}
         placeholder="Ej: 365-130995-0002H"
+        editable={!esEdicion}
       />
 
       <Text style={styles.label}>Nombres:</Text>
@@ -91,7 +111,8 @@ export default function GuardarClientes({ route, navigation }) {
         </Picker>
       </View>
 
-      <Button title="Guardar" onPress={guardar} />
+      <Button title={esEdicion ? 'Actualizar' : 'Guardar'} 
+      onPress={guardar}/>
 
     </View>
   );

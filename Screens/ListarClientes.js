@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import GuardarClientes from './GuardarClientes';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Entypo from '@expo/vector-icons/Entypo';
 
 import { collection, getFirestore, query, doc, setDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import appFirebase from '../BasedeDatos/Firebase';
@@ -31,6 +32,24 @@ export default function ListarClientes({ navigation }) {
     });
     setClientes(d);
   }
+
+  const Editar = (cliente) => {
+    const guardarNuevo = async(nuevo) => {
+      const id = cliente ? cliente.cedula : nuevo.cedula;
+      await setDoc(doc(db, "clientes", id), nuevo);
+      Alert.alert('Datos Actualizados', `
+          Cedula: ${nuevo.cedula}
+          Nombres: ${nuevo.nombres}
+          Apellidos: ${nuevo.apellidos}
+          Fecha Nacimiento: ${nuevo.fechanac}
+          sexo: ${nuevo.sexo}
+        `);
+      LeerDatos();
+    };
+    navigation.navigate('GuardarClientes', { guardarNuevo, cliente, esEdicion: true });
+  };
+
+  
 
   const eliminar = (cedula) => {
     Alert.alert(
@@ -72,7 +91,9 @@ export default function ListarClientes({ navigation }) {
           {clientes.map((i, index) => (
             <View key={index} style={styles.card}>
               <MaterialCommunityIcons name="delete-forever" size={24} color="green" 
-              onPress={() => eliminar(i.cedula)}   />
+              onPress={() => eliminar(i.cedula)} /> 
+              <Entypo name="edit" size={24} color="green" 
+              onPress={() => Editar(i)} />
               <Text style={styles.label}>Cedula: <Text style={styles.valor}>{i.cedula}</Text> </Text>
               <Text style={styles.label}>Nombres: <Text style={styles.valor}>{i.nombres}</Text> </Text>
               <Text style={styles.label}>Apellidos: <Text style={styles.valor}>{i.apellidos}</Text> </Text>
