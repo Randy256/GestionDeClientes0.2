@@ -4,6 +4,9 @@ import GuardarClientes from './GuardarClientes';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+
+import { TextInput } from 'react-native';
 
 import { collection, getFirestore, query, doc, setDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import appFirebase from '../BasedeDatos/Firebase';
@@ -13,6 +16,30 @@ const db=getFirestore(appFirebase);
 export default function ListarClientes({ navigation }) {
 
   const [clientes, setClientes] = useState([]);
+
+  const [busqueda, setBusqueda] = useState('');
+  const [clientesFiltrados, setClientesFiltrados] = useState([]);
+
+  useEffect(() => {
+    LeerDatos();
+  }, []);
+
+  useEffect(() => {
+    if (busqueda.trim() === '') {
+      setClientesFiltrados(clientes);
+    } else {
+      const texto = busqueda.toLowerCase();
+      setClientesFiltrados(
+        clientes.filter(c =>
+          (c.cedula && c.cedula.toLowerCase().includes(texto)) ||
+          (c.nombres && c.nombres.toLowerCase().includes(texto)) ||
+          (c.apellidos && c.apellidos.toLowerCase().includes(texto)) ||
+          (c.fechanac && c.fechanac.toLowerCase().includes(texto)) ||
+          (c.sexo && c.sexo.toLowerCase().includes(texto))
+        )
+      );
+    }
+  }, [busqueda, clientes]);
 
   const guardarNuevo = async(nuevo) => {
     await setDoc(doc(db, "clientes", nuevo.cedula), nuevo);
@@ -76,6 +103,37 @@ export default function ListarClientes({ navigation }) {
   return (
 
     <View style={styles.container}>
+
+      <View style={{ position: 'relative', marginBottom: 15 }}>
+        <TextInput
+        style={{
+          borderWidth: 1,
+          borderColor: '#999',
+          borderRadius: 5,
+          padding: 8,
+          paddingRight: 40,
+          width: '100%',
+          backgroundColor: '#fff',
+        }}
+        placeholder="Buscar cliente por cualquier dato..."
+        value={busqueda}
+        onChangeText={setBusqueda}
+      />
+      <TouchableOpacity 
+        style={{
+        position: 'absolute',
+        right: 10,
+        top: 10,
+        height: 24,
+        width: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }} 
+      >
+        <FontAwesome5 name="search" size={24} color="green" />
+      </TouchableOpacity>
+      </View>
+
       <TouchableOpacity 
         style={styles.boton} 
         onPress={() => navigation.navigate('GuardarClientes', { guardarNuevo })}
@@ -84,11 +142,11 @@ export default function ListarClientes({ navigation }) {
       </TouchableOpacity>
 
       <Text style={styles.titulo}>Lista de Clientes</Text>
-      {clientes.length === 0 ? (
+      {clientesFiltrados.length === 0 ? (
         <Text style={styles.mensaje}>No hay clientes registrados.</Text>
       ) : (
         <ScrollView style={styles.lista}>
-          {clientes.map((i, index) => (
+          {clientesFiltrados.map((i, index) => (
             <View key={index} style={styles.card}>
               <MaterialCommunityIcons name="delete-forever" size={24} color="green" 
               onPress={() => eliminar(i.cedula)} /> 
