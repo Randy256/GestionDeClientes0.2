@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "GestionDeClientes",
-    "slug": "GestionDeClientes",
+    "slug": "gestiondeclientes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,10 +20,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.randy2003.gestiondeclientes"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f568e43b-9e2b-4105-a85e-564784117b66"
+      }
+    },
+    "owner": "randy2003"
   }
 }
